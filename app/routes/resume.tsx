@@ -1,4 +1,4 @@
-import {Link, useNavigate, useParams} from "react-router";
+import {Link, useNavigate, useParams, useSearchParams} from "react-router";
 import {useEffect, useState} from "react";
 import {usePuterStore} from "~/lib/puter";
 import Summary from "~/components/Summary";
@@ -13,41 +13,55 @@ export const meta = () => ([
 const Resume = () => {
     const { auth, isLoading, fs, kv } = usePuterStore();
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const isTemp = searchParams.get('temp') === 'true';
     const [imageUrl, setImageUrl] = useState('');
     const [resumeUrl, setResumeUrl] = useState('');
     const [feedback, setFeedback] = useState<Feedback | null>(null);
+    const [isTemporaryData, setIsTemporaryData] = useState(isTemp);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
-    }, [isLoading])
+        // Don't redirect if viewing temporary data
+        if(!isTemp && !isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
+    }, [isLoading, isTemp, auth.isAuthenticated, id, navigate])
 
     useEffect(() => {
         const loadResume = async () => {
-            const resume = await kv.get(`resume:${id}`);
+            let data;
+            
+            // Load from temporary storage if temp=true
+            if(isTemp) {
+                const tempData = sessionStorage.getItem(`temp-resume:${id}`);
+                if(!tempData) return;
+                data = JSON.parse(tempData);
+            } else {
+                // Load from persistent storage (Puter KV)
+                const resume = await kv.get(`resume:${id}`);
+                if(!resume) return;
+                data = JSON.parse(resume);
+            }
 
-            if(!resume) return;
-
-            const data = JSON.parse(resume);
-
+            // Read files from Puter FS for both temporary and persistent data
             const resumeBlob = await fs.read(data.resumePath);
-            if(!resumeBlob) return;
-
-            const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
-            const resumeUrl = URL.createObjectURL(pdfBlob);
-            setResumeUrl(resumeUrl);
+            if(resumeBlob) {
+                const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
+                const resumeUrl = URL.createObjectURL(pdfBlob);
+                setResumeUrl(resumeUrl);
+            }
 
             const imageBlob = await fs.read(data.imagePath);
-            if(!imageBlob) return;
-            const imageUrl = URL.createObjectURL(imageBlob);
-            setImageUrl(imageUrl);
+            if(imageBlob) {
+                const imageUrl = URL.createObjectURL(imageBlob);
+                setImageUrl(imageUrl);
+            }
 
             setFeedback(data.feedback);
-            console.log({resumeUrl, imageUrl, feedback: data.feedback });
+            console.log({feedback: data.feedback });
         }
 
         loadResume();
-    }, [id]);
+    }, [id, isTemp, kv, fs]);
 
     return (
         <main className="!pt-0">
@@ -73,6 +87,28 @@ const Resume = () => {
                 </section>
                 <section className="feedback-section">
                     <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
+                    
+                    {/* Temporary Data Warning Banner */}
+                    {isTemporaryData && (
+                        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl">⚠️</span>
+                                <div className="flex-1">
+                                    <h3 className="font-semibold text-yellow-900 mb-2">This analysis is temporary</h3>
+                                    <p className="text-sm text-yellow-800 mb-3">
+                                        Your results are not saved. If you leave this page, you'll need to re-upload your resume to see it again.
+                                    </p>
+                                    <button 
+                                        onClick={() => navigate('/auth')}
+                                        className="primary-button text-sm"
+                                    >
+                                        Log In to Save Your Analysis
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
                     {feedback ? (
                         <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
                             <Summary feedback={feedback} />

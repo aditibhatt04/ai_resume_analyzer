@@ -334,24 +334,44 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             return;
         }
 
-        return puter.ai.chat(
-            [
-                {
-                    role: "user",
-                    content: [
-                        {
-                            type: "file",
-                            puter_path: path,
-                        },
-                        {
-                            type: "text",
-                            text: message,
-                        },
-                    ],
-                },
-            ],
-            { model: "claude-3-7-sonnet" }
-        ) as Promise<AIResponse | undefined>;
+        try {
+            console.log('Calling puter.ai.chat with path:', path);
+            console.log('Message length:', message.length);
+            console.log('Message preview:', message.substring(0, 200) + '...');
+            
+            const response = await puter.ai.chat(
+                [
+                    {
+                        role: "user",
+                        content: [
+                            {
+                                type: "file",
+                                puter_path: path,
+                            },
+                            {
+                                type: "text",
+                                text: message,
+                            },
+                        ],
+                    },
+                ]
+            ) as Promise<AIResponse | undefined>;
+            
+            console.log('puter.ai.chat raw response:', response);
+            console.log('Response type:', typeof response);
+            console.log('Response keys:', response ? Object.keys(response) : 'null');
+            if (response?.message) {
+                console.log('Response.message:', response.message);
+                console.log('Response.message type:', typeof response.message);
+                console.log('Response.message keys:', Object.keys(response.message));
+            }
+            return response;
+        } catch (error) {
+            console.error('Error in feedback function:', error);
+            console.error('Error type:', typeof error);
+            setError(`AI feedback failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw error;
+        }
     };
 
     const img2txt = async (image: string | File | Blob, testMode?: boolean) => {

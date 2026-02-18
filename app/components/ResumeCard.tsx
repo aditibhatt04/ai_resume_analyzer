@@ -7,6 +7,17 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
     const { fs } = usePuterStore();
     const [resumeUrl, setResumeUrl] = useState('');
 
+    // Calculate overall score as average of all category scores with safety checks
+    const calculatedOverallScore = feedback && feedback.ATS && feedback.toneAndStyle && feedback.content && feedback.structure && feedback.skills
+        ? Math.round(
+            (feedback.ATS.score + 
+             feedback.toneAndStyle.score + 
+             feedback.content.score + 
+             feedback.structure.score + 
+             feedback.skills.score) / 5
+          )
+        : feedback?.overallScore || 0;
+
     useEffect(() => {
         const loadResume = async () => {
             const blob = await fs.read(imagePath);
@@ -27,7 +38,7 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
                     {!companyName && !jobTitle && <h2 className="!text-black font-bold">Resume</h2>}
                 </div>
                 <div className="flex-shrink-0">
-                    <ScoreCircle score={feedback.overallScore} />
+                    <ScoreCircle score={calculatedOverallScore} />
                 </div>
             </div>
             {resumeUrl && (

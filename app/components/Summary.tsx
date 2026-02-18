@@ -22,10 +22,21 @@ const Category = ({ title, score }: { title: string, score: number }) => {
 }
 
 const Summary = ({ feedback }: { feedback: Feedback }) => {
+    // Calculate overall score as average of all category scores with safety checks
+    const calculatedOverallScore = feedback?.ATS && feedback?.toneAndStyle && feedback?.content && feedback?.structure && feedback?.skills
+        ? Math.round(
+            (feedback.ATS.score + 
+             feedback.toneAndStyle.score + 
+             feedback.content.score + 
+             feedback.structure.score + 
+             feedback.skills.score) / 5
+          )
+        : feedback?.overallScore || 0;
+
     return (
         <div className="bg-white rounded-2xl shadow-md w-full">
             <div className="flex flex-row items-center p-4 gap-8">
-                <ScoreGauge score={feedback.overallScore} />
+                <ScoreGauge score={calculatedOverallScore} />
 
                 <div className="flex flex-col gap-2">
                     <h2 className="text-2xl font-bold">Your Resume Score</h2>
@@ -35,10 +46,10 @@ const Summary = ({ feedback }: { feedback: Feedback }) => {
                 </div>
             </div>
 
-            <Category title="Tone & Style" score={feedback.toneAndStyle.score} />
-            <Category title="Content" score={feedback.content.score} />
-            <Category title="Structure" score={feedback.structure.score} />
-            <Category title="Skills" score={feedback.skills.score} />
+            <Category title="Tone & Style" score={feedback?.toneAndStyle?.score || 0} />
+            <Category title="Content" score={feedback?.content?.score || 0} />
+            <Category title="Structure" score={feedback?.structure?.score || 0} />
+            <Category title="Skills" score={feedback?.skills?.score || 0} />
         </div>
     )
 }
