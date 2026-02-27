@@ -1,0 +1,65 @@
+{
+  "jobId": "SDE-INTERN-2026-001",
+  "company": "TechVision Solutions",
+  "position": "Software Development Engineer Intern",
+  "location": "Bangalore, India",
+  "employmentType": "Internship",
+  "duration": "6 months",
+  "stipend": "₹15,000 - ₹25,000/month",
+  "postedDate": "2026-02-20",
+  "applicationDeadline": "2026-03-31",
+  "description": "TechVision Solutions is looking for talented Software Development Engineer (SDE) interns to join our vibrant engineering team. As an SDE intern, you will work on real-world projects, collaborate with experienced engineers, and contribute to building scalable applications.",
+  "responsibilities": [
+    "Develop and maintain web applications using React and TypeScript",
+    "Write clean, efficient, and well-documented code",
+    "Participate in code reviews and learn best practices",
+    "Collaborate with cross-functional teams including designers and product managers",
+    "Debug and troubleshoot application issues",
+    "Implement UI components based on design specifications",
+    "Write unit tests for developed features",
+    "Contribute to technical documentation"
+  ],
+  "requiredSkills": [
+    "JavaScript/TypeScript",
+    "React or Vue.js",
+    "HTML5 and CSS3",
+    "Git/Github",
+    "Basic understanding of REST APIs",
+    "Problem-solving skills"
+  ],
+  "preferredSkills": [
+    "Next.js or Remix",
+    "Tailwind CSS",
+    "Node.js",
+    "SQL/NoSQL databases",
+    "Docker",
+    "GitHub Actions or CI/CD",
+    "Experience with Vite build tools"
+  ],
+  "qualifications": [
+    "Currently pursuing or recently completed B.Tech/B.Sc in Computer Science or related field",
+    "Strong grasp of Data Structures and Algorithms",
+    "Excellent communication and team collaboration skills",
+    "Self-motivated with ability to work independently",
+    "Passion for learning new technologies"
+  ],
+  "benefits": [
+    "Hands-on experience with modern tech stack",
+    "Mentorship from senior engineers",
+    "Flexible work environment (Remote/Hybrid)",
+    "Certificate of completion",
+    "Opportunity for conversion to full-time role",
+    "Snacks and beverages provided"
+  ],
+  "keywords": [
+    "SDE",
+    "Intern",
+    "Fresher",
+    "React",
+    "TypeScript",
+    "Frontend",
+    "Web Development",
+    "Bangalore",
+    "Entry Level"
+  ]
+}

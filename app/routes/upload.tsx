@@ -34,14 +34,26 @@ const Upload = () => {
             console.log('Starting analysis for file:', file.name);
             
             setStatusText('Uploading the file...');
-            const uploadedFile = await fs.upload([file]);
-            console.log('Uploaded file:', uploadedFile);
-            console.log('Uploaded file type:', typeof uploadedFile);
-            console.log('Uploaded file keys:', uploadedFile ? Object.keys(uploadedFile) : 'null');
+            const uploadResult = await fs.upload([file]);
+            console.log('Upload result:', uploadResult);
+            console.log('Upload result type:', typeof uploadResult);
+            console.log('Upload result is array:', Array.isArray(uploadResult));
+            console.log('Upload result keys:', uploadResult ? Object.keys(uploadResult) : 'null');
+            
+            // Handle both single FSItem and array responses
+            let uploadedFile;
+            if (Array.isArray(uploadResult)) {
+                uploadedFile = uploadResult[0];
+                console.log('Upload returned array, using first item:', uploadedFile);
+            } else {
+                uploadedFile = uploadResult;
+                console.log('Upload returned single item:', uploadedFile);
+            }
+            
             console.log('Uploaded file path:', uploadedFile?.path);
             
-            if(!uploadedFile) {
-                console.error('File upload failed - no result returned');
+            if(!uploadedFile || !uploadedFile.path) {
+                console.error('File upload failed - no result returned', uploadResult);
                 setStatusText('Error: Failed to upload file');
                 return;
             }
@@ -66,11 +78,21 @@ const Upload = () => {
             }
 
             setStatusText('Uploading the image...');
-            const uploadedImage = await fs.upload([imageFile.file]);
-            console.log('Uploaded image:', uploadedImage);
+            const uploadImageResult = await fs.upload([imageFile.file]);
+            console.log('Upload image result:', uploadImageResult);
             
-            if(!uploadedImage) {
-                console.error('Image upload failed');
+            // Handle both single FSItem and array responses
+            let uploadedImage;
+            if (Array.isArray(uploadImageResult)) {
+                uploadedImage = uploadImageResult[0];
+                console.log('Image upload returned array, using first item:', uploadedImage);
+            } else {
+                uploadedImage = uploadImageResult;
+                console.log('Image upload returned single item:', uploadedImage);
+            }
+            
+            if(!uploadedImage || !uploadedImage.path) {
+                console.error('Image upload failed', uploadImageResult);
                 setStatusText('Error: Failed to upload image');
                 return;
             }
